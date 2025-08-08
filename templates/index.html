@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pune Court Case Scraper</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #166088;
+            --accent-color: #4fc3f7;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --success-color: #28a745;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: var(--dark-color);
+            background-color: #f5f7fa;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
+        h2 {
+            color: var(--secondary-color);
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .search-form {
+            background: var(--light-color);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--secondary-color);
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        
+        input:focus {
+            border-color: var(--accent-color);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(79, 195, 247, 0.2);
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-weight: 500;
+            width: 100%;
+        }
+        
+        button:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .result-container {
+            margin-top: 30px;
+            padding: 25px;
+            background: var(--light-color);
+            border-radius: var(--border-radius);
+            display: {% if result %}block{% else %}none{% endif %};
+        }
+        
+        h3 {
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 8px;
+        }
+        
+        .result-list {
+            list-style-type: none;
+        }
+        
+        .result-list li {
+            margin-bottom: 12px;
+            padding: 12px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .result-list strong {
+            color: var(--secondary-color);
+        }
+        
+        .pdf-button {
+            display: inline-block;
+            background-color: var(--success-color);
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            transition: background-color 0.3s;
+            margin-top: 5px;
+        }
+        
+        .pdf-button:hover {
+            background-color: #218838;
+        }
+        
+        .logs-link {
+            display: block;
+            text-align: center;
+            margin-top: 30px;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .logs-link:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .search-form, .result-container {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Pune District Court Case Search</h2>
+        
+        <form method="POST" class="search-form">
+            <div class="form-group">
+                <label for="court_complex">Court Complex:</label>
+                <input type="text" id="court_complex" name="court_complex" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="case_type">Case Type:</label>
+                <input type="text" id="case_type" name="case_type" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="case_number">Case Number:</label>
+                <input type="number" id="case_number" name="case_number" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="year">Year:</label>
+                <input type="number" id="year" name="year" required>
+            </div>
+            
+            <button type="submit">Search Case</button>
+        </form>
+        
+        {% if result %}
+        <div class="result-container">
+            <h3>Case Details</h3>
+            <ul class="result-list">
+                <li><strong>Petitioner:</strong> {{ result.petitioner }}</li>
+                <li><strong>Respondent:</strong> {{ result.respondent }}</li>
+                <li><strong>Filing Date:</strong> {{ result.filing_date }}</li>
+                <li><strong>Next Hearing:</strong> {{ result.next_hearing_date }}</li>
+                <li>
+                    <strong>Document:</strong> 
+                    <a href="/generate_pdf/{{ result.cnr_number }}?court_name={{ result.court_name }}&case_number={{ result.case_number }}&hearing_date={{ result.hearing_date }}&case_title={{ result.case_title }}&business={{ result.business }}&next_purpose={{ result.next_purpose }}&next_hearing_date={{ result.next_hearing_date }}" 
+                       target="_blank" 
+                       class="pdf-button">
+                       Download Full Case PDF
+                    </a>
+                </li>
+            </ul>
+        </div>
+        {% endif %}
+        
+        <a href="/logs" class="logs-link">View Search History</a>
+    </div>
+</body>
+</html>

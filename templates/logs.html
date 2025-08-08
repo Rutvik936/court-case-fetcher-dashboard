@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search History - Pune Court</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #166088;
+            --accent-color: #4fc3f7;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --success-color: #28a745;
+            --error-color: #f44336;
+            --warning-color: #ff9800;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: var(--dark-color);
+            background-color: #f5f7fa;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--accent-color);
+        }
+        
+        h2 {
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+        
+        .back-link {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+        
+        .back-link:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .search-box {
+            flex: 1;
+            max-width: 400px;
+            position: relative;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 12px 15px 12px 40px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #777;
+        }
+        
+        .log-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 15px;
+        }
+        
+        .log-table th {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: left;
+            padding: 15px;
+            font-weight: 500;
+        }
+        
+        .log-table tr {
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.2s;
+        }
+        
+        .log-table tr:hover {
+            background-color: #f8fafd;
+        }
+        
+        .log-table td {
+            padding: 15px;
+            vertical-align: top;
+        }
+        
+        .status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            text-align: center;
+            display: inline-block;
+        }
+        
+        .status-success {
+            background-color: #e8f5e9;
+            color: var(--success-color);
+        }
+        
+        .status-error {
+            background-color: #ffebee;
+            color: var(--error-color);
+        }
+        
+        .result-details {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: var(--border-radius);
+            display: none;
+        }
+        
+        .result-details.show {
+            display: block;
+        }
+        
+        .detail-item {
+            margin-bottom: 8px;
+        }
+        
+        .toggle-details {
+            color: var(--primary-color);
+            cursor: pointer;
+            font-weight: 500;
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: var(--border-radius);
+            transition: background-color 0.2s;
+        }
+        
+        .toggle-details:hover {
+            background-color: #e3f2fd;
+        }
+        
+        .pdf-button {
+            display: inline-block;
+            background-color: var(--success-color);
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            margin-top: 10px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: #777;
+        }
+        
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #ccc;
+        }
+        
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+            }
+            
+            .search-box {
+                max-width: 100%;
+            }
+            
+            .log-table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .log-table td, .log-table th {
+                padding: 10px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Search History Logs</h2>
+            <a href="/" class="back-link">Back to Search</a>
+        </div>
+        
+        <div class="controls">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="logSearch" placeholder="Search logs...">
+            </div>
+        </div>
+        
+        {% if logs %}
+        <table class="log-table">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Search Parameters</th>
+                    <th>Status</th>
+                    <th>Result</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td>{{ log.timestamp }}</td>
+                    <td>
+                        <strong>Court:</strong> {{ log.court_complex }}<br>
+                        <strong>Type:</strong> {{ log.case_type }}<br>
+                        <strong>Case No:</strong> {{ log.case_number }}/{{ log.year }}
+                    </td>
+                    <td>
+                        {% if log.status == 'success' %}
+                            <span class="status status-success">Success</span>
+                        {% elif log.status == 'error' %}
+                            <span class="status status-error">Error</span>
+                        {% else %}
+                            <span class="status">{{ log.status }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="toggle-details" onclick="toggleDetails('details{{ loop.index }}')">
+                            {% if log.status == 'success' %}View Details{% else %}View Error{% endif %}
+                        </span>
+                        <div class="result-details" id="details{{ loop.index }}">
+                            {% if log.status == 'success' %}
+                                {% if log.result.cnr_number %}
+                                <div class="detail-item"><strong>CNR Number:</strong> {{ log.result.cnr_number }}</div>
+                                {% endif %}
+                                {% if log.result.petitioner %}
+                                <div class="detail-item"><strong>Petitioner:</strong> {{ log.result.petitioner }}</div>
+                                {% endif %}
+                                {% if log.result.respondent %}
+                                <div class="detail-item"><strong>Respondent:</strong> {{ log.result.respondent }}</div>
+                                {% endif %}
+                                {% if log.result.next_hearing_date %}
+                                <div class="detail-item"><strong>Next Hearing:</strong> {{ log.result.next_hearing_date }}</div>
+                                {% endif %}
+                                
+                                {% if log.result.cnr_number %}
+                                <a href="/generate_pdf/{{ log.result.cnr_number }}?court_name={{ log.result.court_name }}&case_number={{ log.result.case_number }}&hearing_date={{ log.result.next_hearing_date }}&case_title={{ log.result.case_title }}&business={{ log.result.business }}&next_purpose={{ log.result.next_purpose }}&next_hearing_date={{ log.result.next_hearing_date }}" 
+                                   class="pdf-button">
+                                   Download PDF
+                                </a>
+                                {% endif %}
+                            {% else %}
+                                <div class="detail-item"><strong>Error:</strong> {{ log.result.error_message }}</div>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">📋</div>
+            <h3>No search history found</h3>
+            <p>Your search history will appear here after you perform searches</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function toggleDetails(detailId) {
+            const details = document.getElementById(detailId);
+            details.classList.toggle('show');
+        }
+        
+        // Live search functionality
+        document.getElementById('logSearch').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('.log-table tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+        
+        // Auto-refresh logs every 30 seconds
+        setInterval(() => {
+            if (!document.hidden) {
+                window.location.reload();
+            }
+        }, 30000);
+    </script>
+</body>
+</html>
